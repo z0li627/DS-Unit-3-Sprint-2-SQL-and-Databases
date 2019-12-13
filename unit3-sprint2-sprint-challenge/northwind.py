@@ -24,20 +24,22 @@ def run_queries2():
        - (*Stretch*) Who's the employee with the most territories? Use `TerritoryId`
          (not name, region, or other fields) as the unique identifier for territories.
     """
-    print(c.execute('SELECT (UnitPrice) FROM Product ORDER BY UnitPrice desc limit 10;').fetchall())
-    print(c.execute("""SELECT UnitPrice
-                       FROM Product
-                       INNER JOIN Supplier
-                       ON Supplier.Id = Product.SupplierId
-                       ORDER BY UnitPrice desc limit 10;""").fetchall())
-    print(c.execute("""SELECT COUNT(CategoryId) AS cnt FROM Product
-                       INNER JOIN Category
-                       ON Category.Id = Product.CategoryId
-                       GROUP BY CategoryId
-                       ORDER BY cnt DESC
-                       LIMIT 1;""").fetchall())
+    c = conn.cursor()
+    print(c.execute("""SELECT ProductName, CompanyName FROM
+                         (SELECT * FROM Product
+                         INNER JOIN Supplier
+                         ON Supplier.Id = Product.SupplierId
+                         ORDER BY UnitPrice desc limit 10)""").fetchall())
+    print(c.execute("""SELECT CategoryName, COUNT(CategoryName) AS cnt FROM
+                          ( SELECT * FROM Product
+                          INNER JOIN Category
+                          ON Category.Id = Product.CategoryId )
+                          GROUP BY CategoryName
+                          ORDER BY cnt desc
+                          LIMIT 1;""").fetchall())
 
 
 
 if __name__ == "__main__":
     run_queries()
+    run_queries2()
